@@ -1,51 +1,43 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Playlist Hafalan Kelas 9</title>
+  <meta charset="utf-8" />
+  <title>Playlist Al-Baqarah (Ayat 106–141)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f9f9f9;
-      text-align: center;
-      padding: 20px;
-    }
-    h1 {
-      color: #2c3e50;
-    }
-    audio {
-      margin: 20px 0;
-      width: 100%;
-      max-width: 500px;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    li {
-      margin: 5px 0;
-    }
-    li button {
-      padding: 8px 12px;
-      border: none;
-      background: #3498db;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    li button:hover {
-      background: #2980b9;
-    }
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:#f7fbff; color:#21303a; padding:20px; }
+    h1 { color:#2da5dd; margin-bottom:8px; text-align:center; }
+    #player { width:100%; max-width:900px; margin:20px auto; display:block; }
+    #container { max-width:900px; margin:0 auto; }
+    #playlist { list-style:none; padding:0; margin:0; }
+    #playlist li { padding:10px 12px; margin:6px 0; background:#e6f2fb; border:1px solid #cfeefa; border-radius:8px; cursor:pointer; transition:background .15s; }
+    #playlist li:hover { background:#d5ecfb; }
+    #playlist li.active { background:#2da5dd; color:white; font-weight:600; }
+    .meta { font-size:0.9rem; color:#4a4a4a; margin-bottom:10px; text-align:center; }
+    footer { font-size:0.85rem; color:#666; margin-top:18px; text-align:center; }
   </style>
 </head>
 <body>
-  <h1>🎧 Playlist Hafalan Al-Qur’an</h1>
-  <audio id="audioPlayer" controls></audio>
-  <ul id="playlist"></ul>
+  <div id="container">
+    <h1>Playlist — Surah Al-Baqarah (Ayat 106–141)</h1>
+    <div class="meta">Klik salah satu ayat untuk memutar. Pemutaran otomatis lanjut ke ayat berikutnya setelah selesai.</div>
+
+    <audio id="player" controls preload="none"></audio>
+
+    <ul id="playlist"></ul>
+
+    <footer>Hosted on GitHub Pages • Jika pemutaran otomatis tidak bekerja, tekan tombol Play pada pemutar.</footer>
+  </div>
 
   <script>
-    const tracks = [
+    // --- sesuaikan dengan repo kamu ---
+    const GITHUB_USER = 'smp-saf';
+    const GITHUB_REPO = 'hafalankelas9';
+    const GITHUB_BRANCH = 'main';
+    const baseRaw = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/`;
+
+    // --- daftar file mp3 persis seperti di repo ---
+    const files = [
       "115 Al-Baqarah ayat 106.mp3",
       "116 Al-Baqarah ayat 107.mp3",
       "117 Al-Baqarah ayat 108.mp3",
@@ -84,35 +76,46 @@
       "150 Al-Baqarah ayat 141.mp3"
     ];
 
-    const baseUrl = "https://raw.githubusercontent.com/smp-saf/hafalankelas9/main/";
+    const playlistEl = document.getElementById('playlist');
+    const player = document.getElementById('player');
+    let currentIndex = 0;
 
-    let currentTrack = 0;
-    const audio = document.getElementById("audioPlayer");
-    const playlist = document.getElementById("playlist");
-
-    function loadTrack(index) {
-      currentTrack = index;
-      audio.src = baseUrl + tracks[index];
-      audio.play();
-    }
-
-    tracks.forEach((track, index) => {
-      const li = document.createElement("li");
-      const btn = document.createElement("button");
-      btn.textContent = track;
-      btn.onclick = () => loadTrack(index);
-      li.appendChild(btn);
-      playlist.appendChild(li);
+    // Build playlist UI
+    files.forEach((name, idx) => {
+      const li = document.createElement('li');
+      li.textContent = name.replace(/\.mp3$/,''); // tampilkan tanpa .mp3
+      li.dataset.src = baseRaw + encodeURIComponent(name);
+      li.addEventListener('click', () => playTrack(idx));
+      playlistEl.appendChild(li);
     });
 
-    audio.addEventListener("ended", () => {
-      if (currentTrack < tracks.length - 1) {
-        loadTrack(currentTrack + 1);
+    const items = playlistEl.querySelectorAll('li');
+
+    function setActive(i) {
+      items.forEach(x => x.classList.remove('active'));
+      if (items[i]) items[i].classList.add('active');
+    }
+
+    function playTrack(i) {
+      if (i < 0 || i >= items.length) return;
+      currentIndex = i;
+      const src = items[i].dataset.src;
+      player.src = src;
+      setActive(i);
+      player.play().catch(err => {
+        console.log('Autoplay blocked or play failed:', err);
+      });
+    }
+
+    // Auto next on ended
+    player.addEventListener('ended', () => {
+      if (currentIndex < items.length - 1) {
+        playTrack(currentIndex + 1);
       }
     });
 
-    // Play pertama kali
-    loadTrack(0);
+    // Set first track
+    setActive(0);
   </script>
 </body>
 </html>
