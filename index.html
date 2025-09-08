@@ -2,22 +2,46 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Playlist Al-Baqarah 106-141</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playlist Hafalan Kelas 9</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f8fb; padding: 20px; }
-    h1 { color: #2da5dd; }
-    ul { list-style: none; padding: 0; }
-    li { margin: 5px 0; }
-    li.active { font-weight: bold; color: #2da5dd; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    audio {
+      margin: 20px 0;
+      width: 100%;
+      max-width: 500px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin: 5px 0;
+    }
+    li button {
+      padding: 8px 12px;
+      border: none;
+      background: #3498db;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    li button:hover {
+      background: #2980b9;
+    }
   </style>
 </head>
 <body>
-  <h1>Playlist Al-Baqarah Ayat 106-141</h1>
-
-  <audio id="audioPlayer" controls style="width:100%; margin-bottom:20px;">
-    Your browser does not support the audio element.
-  </audio>
-
+  <h1>🎧 Playlist Hafalan Al-Qur’an</h1>
+  <audio id="audioPlayer" controls></audio>
   <ul id="playlist"></ul>
 
   <script>
@@ -60,43 +84,35 @@
       "150 Al-Baqarah ayat 141.mp3"
     ];
 
-    const baseURL = "https://raw.githubusercontent.com/smp-saf/hafalankelas9/main/";
-    const player = document.getElementById("audioPlayer");
-    const playlistEl = document.getElementById("playlist");
-    let current = 0;
+    const baseUrl = "https://raw.githubusercontent.com/smp-saf/hafalankelas9/main/";
 
-    // Generate playlist
-    tracks.forEach((track, index) => {
-      const li = document.createElement("li");
-      li.textContent = track;
-      li.addEventListener("click", () => {
-        current = index;
-        loadTrack(current);
-        player.play();
-      });
-      playlistEl.appendChild(li);
-    });
+    let currentTrack = 0;
+    const audio = document.getElementById("audioPlayer");
+    const playlist = document.getElementById("playlist");
 
     function loadTrack(index) {
-      player.src = baseURL + encodeURIComponent(tracks[index]);
-      updateActive();
+      currentTrack = index;
+      audio.src = baseUrl + tracks[index];
+      audio.play();
     }
 
-    function updateActive() {
-      [...playlistEl.children].forEach((li, i) => {
-        li.classList.toggle("active", i === current);
-      });
-    }
-
-    // Auto next
-    player.addEventListener("ended", () => {
-      current = (current + 1) % tracks.length;
-      loadTrack(current);
-      player.play();
+    tracks.forEach((track, index) => {
+      const li = document.createElement("li");
+      const btn = document.createElement("button");
+      btn.textContent = track;
+      btn.onclick = () => loadTrack(index);
+      li.appendChild(btn);
+      playlist.appendChild(li);
     });
 
-    // Load first track
-    loadTrack(current);
+    audio.addEventListener("ended", () => {
+      if (currentTrack < tracks.length - 1) {
+        loadTrack(currentTrack + 1);
+      }
+    });
+
+    // Play pertama kali
+    loadTrack(0);
   </script>
 </body>
 </html>
